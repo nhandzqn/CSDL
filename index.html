@@ -1,122 +1,24 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PhimHayZ</title>
-<style>
-  :root { --card-w:180px; --poster-h:230px; }
-  body{margin:0;font-family:Arial, sans-serif;background:#111;color:#fff;}
-  header{background:#000;padding:12px 20px;font-size:24px;font-weight:700;color:#ffd400;}
-
-  .movies{display:flex;flex-wrap:wrap;gap:16px;padding:20px;}
-  .movie{width:var(--card-w);background:#1c1c1c;border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;}
-  .movie:hover{transform:scale(1.04);box-shadow:0 8px 20px rgba(0,0,0,.35);}
-  .poster{position:relative;width:100%;height:var(--poster-h);background:#555;display:flex;align-items:center;justify-content:center;}
-  .poster.has-img{background:#000;}
-  .poster.has-img::before{content:"";position:absolute;inset:0;background:var(--bg) center/cover no-repeat;}
-  .poster::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.25);}
-  .poster span{position:relative;z-index:1;color:#ddd;font-size:14px;}
-  .poster.has-img span{display:none;}
-  .movie-title{background:#1f1f1f;padding:10px;font-size:14px;font-weight:700;text-align:center;min-height:42px;}
-
-  /* Popup */
-  #videoPopup{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;}
-  #videoPopup.show{display:flex;}
-  #videoWrap{position:relative;width:80%;max-width:1280px;aspect-ratio:16/9;}
-  #videoWrap video{width:100%;height:100%;border-radius:10px;box-shadow:0 0 20px rgba(255,255,255,.25);}
-
-  /* Nút thoát: cố định góc phải overlay */
-  #closeBtn{
-    position:fixed;
-    top:14px; right:14px;
-    display:grid;place-items:center;
-    width:44px;height:44px;border-radius:999px;
-    background:rgba(0,0,0,.55);
-    border:1px solid rgba(255,255,255,.25);
-    backdrop-filter:blur(6px);
-    color:#fff;cursor:pointer;
-    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
-    box-shadow:0 6px 16px rgba(0,0,0,.5);
-    z-index:100;
-    pointer-events:auto;
-  }
-  #closeBtn:hover{background:rgba(255,255,255,.1);transform:scale(1.06);}
-  #closeBtn:active{transform:scale(0.96);}
-  #closeBtn svg{width:22px;height:22px;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Netlify</title>
+  <style>
+    body {
+      background: #222;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    h1 {
+      color: #ffd700;
+    }
+  </style>
 </head>
 <body>
-
-<header>PhimHayZ</header>
-
-<div class="movies" id="movieList"></div>
-
-<div id="videoPopup">
-  <button id="closeBtn" aria-label="Thoát" title="Thoát">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <line x1="18" y1="6"  x2="6" y2="18"></line>
-      <line x1="6"  y1="6"  x2="18" y2="18"></line>
-    </svg>
-  </button>
-  <div id="videoWrap">
-    <video id="videoPlayer" controls></video>
-  </div>
-</div>
-
-<script>
-  // Danh sách phim
-  const movies = [
-    { title:"Test 1", poster:"", video:"https://www.w3schools.com/html/mov_bbb.mp4" },
-    { title:"Test 2", poster:"", video:"https://www.w3schools.com/html/movie.mp4" },
-    { title:"Test 3", poster:"", video:"https://www.w3schools.com/html/mov_bbb.mp4" }
-  ];
-
-  const list = document.getElementById("movieList");
-  movies.forEach(m=>{
-    const card=document.createElement("div"); card.className="movie";
-    const poster=document.createElement("div"); poster.className="poster";
-    if(m.poster){ poster.classList.add("has-img"); poster.style.setProperty("--bg",`url("${m.poster}")`); }
-    const label=document.createElement("span"); label.textContent="Không có ảnh"; poster.appendChild(label);
-    const title=document.createElement("div"); title.className="movie-title"; title.textContent=m.title;
-    card.append(poster,title);
-    card.onclick=()=>openVideo(m.video);
-    list.appendChild(card);
-  });
-
-  const popup=document.getElementById("videoPopup");
-  const player=document.getElementById("videoPlayer");
-  const closeBtn=document.getElementById("closeBtn");
-
-  function openVideo(src){
-    player.src=src; popup.classList.add("show"); player.play();
-  }
-  function closeVideo(){
-    player.pause(); player.src=""; popup.classList.remove("show");
-  }
-
-  // Sự kiện nút thoát và Esc
-  closeBtn.addEventListener('click', closeVideo);
-  document.addEventListener('keydown', e=>{
-    if(!popup.classList.contains('show')) return;
-    if(e.key==='Escape'){ e.preventDefault(); closeVideo(); }
-    if(e.key==='ArrowLeft'){ e.preventDefault(); seekBy(-5); }
-    if(e.key==='ArrowRight'){ e.preventDefault(); seekBy(5); }
-  });
-
-  // Tua 5s bằng phím
-  function seekBy(delta){
-    if (!player) return;
-    const dur = isFinite(player.duration) ? player.duration : 1e9;
-    player.currentTime = Math.max(0, Math.min(dur - 0.001, player.currentTime + delta));
-  }
-
-  // Luôn mở trang chủ trước
-  document.addEventListener("DOMContentLoaded", ()=>{ popup.classList.remove("show"); player.src=""; });
-
-  // Đã bỏ sự kiện click nền đen để đóng
-</script>
-
+  <h1>Trang test Netlify</h1>
+  <p>Nếu bạn thấy dòng này, tức là web đã cập nhật thành công!</p>
 </body>
 </html>
